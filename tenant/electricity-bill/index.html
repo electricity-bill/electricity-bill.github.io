@@ -15,11 +15,18 @@
 
             <h2 style="text-align: center;"><br><br>Electricity Bill Calculator</h2><br><br>
             <form>
-                <label for="previousreading">Previous reading :</label><br>
-                <input type="text" id="previousreading" name="previousreading" value="5241" readonly="readonly"><br>
-                <label for="currentreading" id="currentreadinglabel"></label><br>
-                <input type="text" id="currentreading" name="currentreading"
-                    placeholder="Enter current reading from meter"><br>
+                <label for="previousreadingMainMeter">Previous reading (Main meter) :</label><br>
+                <input type="text" id="previousreadingMainMeter" name="previousreadingMainMeter" value="11621"
+                    readonly="readonly"><br>
+                <label for="previousreadingSubMeter">Previous reading (Sub meter) :</label><br>
+                <input type="text" id="previousreadingSubMeter" name="previousreadingSubMeter" value="5241"
+                    readonly="readonly"><br>
+                <label for="currentreadingMainMeter" id="currentreadingMainMeterLabel"></label><br>
+                <input type="text" id="currentreadingMainMeter" name="currentreadingMainMeter"
+                    placeholder="Enter current reading from main meter"><br>
+                <label for="currentreadingSubMeter" id="currentreadingSubMeterLabel"></label><br>
+                <input type="text" id="currentreadingSubMeter" name="currentreadingSubMeter"
+                    placeholder="Enter current reading from sub meter"><br>
                 <label for="totalamount">Total amount (as per bill) :</label><br>
                 <input type="text" id="totalamount" name="totalamount" placeholder="Enter total charge"><br>
                 <label for="totalelectricityunits">Total electricity units (as per bill) :</label><br>
@@ -37,20 +44,25 @@
     <script>
         button.addEventListener("click", function (e) {
             e.preventDefault();
-            const previousreading = document.getElementById('previousreading').value;
-            const currentreading = document.getElementById('currentreading').value;
+            const previousreadingMainMeter = document.getElementById('previousreadingMainMeter').value;
+            const previousreadingSubMeter = document.getElementById('previousreadingSubMeter').value;
+            const currentreadingMainMeter = document.getElementById('currentreadingMainMeter').value;
+            const currentreadingSubMeter = document.getElementById('currentreadingSubMeter').value;
             const totalamount = document.getElementById('totalamount').value;
             const totalelectricityunits = document.getElementById('totalelectricityunits').value;
             const outcome = document.getElementById('outcome');
-            const output = (currentreading - previousreading) * (totalamount / totalelectricityunits);
+            const averageCostPerElectricityUnits = (totalamount / totalelectricityunits);
+            const outputMainMeter = (currentreadingMainMeter - previousreadingMainMeter) * averageCostPerElectricityUnits;
+            const outputSubMeter = (currentreadingSubMeter - previousreadingSubMeter) * averageCostPerElectricityUnits;
             const button = document.getElementById('button');
-            outcome.innerHTML = `<br><br>Electricity bill for left room-set and right room-set are <b>${Math.ceil(output)}</b> and <b>${Math.ceil(totalamount - output)}</b> respectively.<br><br>`;
+            outcome.innerHTML = `<br><br>Electricity bill for left room-set and right room-set are <b>${Math.ceil(outputSubMeter)}</b> and <b>${Math.ceil(outputMainMeter)}</b> respectively.<br><br>`;
         });
         const n = new Date();
         y = n.getFullYear();
         m = n.getMonth() + 1;
         d = n.getDate();
-        document.getElementById("currentreadinglabel").innerHTML = "Current reading (Dated : " + d + "/" + m + "/" + y + ") :";
+        document.getElementById("currentreadingMainMeterLabel").innerHTML = "Current reading main meter (Dated : " + d + "/" + m + "/" + y + ") :";
+        document.getElementById("currentreadingSubMeterLabel").innerHTML = "Current reading sub meter (Dated : " + d + "/" + m + "/" + y + ") :";
     </script>
 </body>
 

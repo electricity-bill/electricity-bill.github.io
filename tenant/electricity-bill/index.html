@@ -56,6 +56,7 @@
             const outputSubMeter = (currentreadingSubMeter - previousreadingSubMeter) * averageCostPerElectricityUnits;
             const button = document.getElementById('button');
             outcome.innerHTML = `<br><br>Electricity bill for left room-set and right room-set are <b>${Math.ceil(outputSubMeter)}</b> and <b>${Math.ceil(outputMainMeter)}</b> respectively.<br><br>`;
+//             outcome.innerHTML = `<br><br>Electricity bill for left room-set and right room-set are <b>${Math.ceil(outputSubMeter)}</b> and <b>${Math.ceil(totalamount - outputSubMeter)}</b> respectively.<br><br>`;
         });
         const n = new Date();
         y = n.getFullYear();

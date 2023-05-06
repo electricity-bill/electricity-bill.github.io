@@ -163,7 +163,7 @@
 
 
 				<div class="btn">
-					<input id="button" type="submit" value="Calculate">
+					<input id="btn" type="submit" value="Calculate">
 				</div>
 			</form>
 
@@ -172,6 +172,7 @@
 	</div>
 
 	<script>
+		const button = document.getElementById('btn');
 		button.addEventListener("click", function (e) {
 
 			e.preventDefault();
@@ -242,7 +243,6 @@
 			const totalElectricityBillRounded = Math.round((totalElectricityBill + Number.EPSILON) * 100) / 100
 
 			const outcome = document.getElementById('outcome');
-			const button = document.getElementById('button');
 
 			outcome.innerHTML = `<br>Your electricity bill is ₹${totalElectricityBillRounded} ( <span style="font-size:0.8rem;">Variable Charges : ₹${varChargesTotalRounded}, Fixed Charges : ₹${fixedChargesTotalRounded}, and Extra Charges : ₹${extraChargesRounded}</span> ) `;
 		});

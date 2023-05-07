@@ -1,253 +1,257 @@
-<!-- Design by foolishdeveloper.com -->
-<!-- Adapted and used by dheerajpant.github.io -->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Gauri Kunj</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauri Kunj</title>
 
-	<style>
-		@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700&display=swap');
 
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-			outline: none;
-			font-family: sans-serif;
-			font-weight: 600;
-		}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+            font-family: sans-serif;
+            font-weight: 600;
+        }
 
-		body {
-			height: 100vh;
-			background: linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .45)), url("1.jpg");
-			background-size: cover;
-		}
+        body {
+            height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .45)), url("1.jpg");
+            background-size: cover;
+        }
 
-		.wrapper {
-			max-width: 450px;
-			width: 100%;
-			margin: 30px auto 0;
-			padding: 10px;
+        .wrapper {
+            max-width: 450px;
+            width: 100%;
+            margin: 30px auto 0;
+            padding: 10px;
 
-		}
+        }
 
-		.wrapper .form_container {
-			padding: 30px;
-			box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.5);
-			border-radius: 3px;
-		}
+        .wrapper .form_container {
+            padding: 30px;
+            box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+        }
 
-		.heading {
-			background: #015a80;
-			margin: -30px;
-			text-align: center;
-			color: white;
-			font-size: 19px;
-			margin-bottom: 35px;
-			padding: 10px;
+        .heading {
+            background: #015a80;
+            margin: -30px;
+            text-align: center;
+            color: white;
+            font-size: 19px;
+            margin-bottom: 35px;
+            padding: 10px;
 
 
-		}
+        }
 
-		.wrapper .form_container .form_item {
-			margin-bottom: 25px;
-		}
+        .wrapper .form_container .form_item {
+            margin-bottom: 25px;
+        }
 
-		.form_wrap.fullname,
-		.form_wrap.select_box {
-			display: flex;
-		}
+        .form_wrap.fullname,
+        .form_wrap.select_box {
+            display: flex;
+        }
 
-		.form_wrap.fullname .form_item,
-		.form_wrap.select_box .form_item {
-			width: 50%;
-		}
+        .form_wrap.fullname .form_item,
+        .form_wrap.select_box .form_item {
+            width: 50%;
+        }
 
-		.form_wrap.fullname .form_item:first-child,
-		.form_wrap.select_box .form_item:first-child {
-			margin-right: 4%;
-		}
+        .form_wrap.fullname .form_item:first-child,
+        .form_wrap.select_box .form_item:first-child {
+            margin-right: 4%;
+        }
 
-		.wrapper .form_container .form_item label {
-			display: block;
-			margin-bottom: 5px;
-		}
+        .wrapper .form_container .form_item label {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-		.form_item input[type="text"],
-		.form_item select {
-			width: 100%;
-			padding: 10px;
-			font-size: 16px;
-			border: 1px solid #dadce0;
-			box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
-			border-radius: 3px;
-		}
+        .form_item input[type="text"],
+        .form_item select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+        }
 
-		.form_item input[type="text"]:focus {
-			border-color: #6271f0;
-		}
+        .form_item input[type="text"]:focus {
+            border-color: #6271f0;
+        }
 
-		.btn input[type="submit"] {
-			background: #1598d4;
-			border: 1px solid #1598d4;
-			padding: 10px;
-			width: 100%;
-			font-size: 16px;
-			letter-spacing: 1px;
-			border-radius: 3px;
-			cursor: pointer;
-			color: #fff;
-		}
-	</style>
+        .btn input[type="submit"] {
+            background: #1598d4;
+            border: 1px solid #1598d4;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            letter-spacing: 1px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        #outcome p {
+            background-color: white;
+            padding: 10px;
+            margin-top: 15px;
+            box-shadow: 1px 1px 25px rgba(0, 0, 0, 0.75);
+        }
+    </style>
 </head>
 
 <body>
 
-	<div class="wrapper">
+    <div class="wrapper">
 
 
-		<div class="form_container">
-			<form name="form">
-				<div class="heading">
-					<h2>Electricity Bill Calculator</h2>
-				</div>
+        <div class="form_container">
+            <form name="form">
+                <div class="heading">
+                    <h2>Electricity Bill Calculator</h2>
+                </div>
 
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="units">Electricity Units</label>
-						<input type="text" id="units" name="units">
-					</div>
-				</div>
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="">Time Interval (in Days)</label>
-						<input type="text" id="days" name="days">
-					</div>
-				</div>
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="contractedLoad">Contracted Load (in KW)</label>
-						<input type="text" id="contractedLoad" name="contractedLoad" value="2">
-					</div>
-				</div>
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="varCharges">Variable Electricity Charges (<span
-								style="font-size: 0.76rem;">0-100@₹3.15,
-								&nbsp;101-200@₹4.6,
-								&nbsp;201-400@₹6.3,
-								&nbsp;401-Above@₹6.95</span>)</label>
-						<input type="text" id="varCharges" name="varCharges" value="@3.15 @4.6 @6.3 @6.95">
-					</div>
-				</div>
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="fixedCharges">Fixed Electricity Charges (<span
-								style="font-size: 0.76rem;">0-1@₹60.0,
-								&nbsp;2-4@₹70.0, &nbsp;5-Above@₹80.0</span>)</label>
-						<input type="text" id="fixedCharges" name="fixedCharges" value="@60 @70 @80">
-					</div>
-				</div>
-				<div class="form_wrap">
-					<div class="form_item">
-						<label for="extraCharges">Extra charges (excluding meter charges)</label>
-						<input type="text" id="extraCharges" name="extraCharges" value="198.55">
-					</div>
-				</div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="units">Electricity Units</label>
+                        <input type="text" id="units" name="units">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="">Time Interval (in Days)</label>
+                        <input type="text" id="days" name="days">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="contractedLoad">Contracted Load (in KW)</label>
+                        <input type="text" id="contractedLoad" name="contractedLoad" value="2">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="varCharges">Variable Electricity Charges (<span
+                                style="font-size: 0.76rem;">0-100@₹3.15,
+                                &nbsp;101-200@₹4.6,
+                                &nbsp;201-400@₹6.3,
+                                &nbsp;401-Above@₹6.95</span>)</label>
+                        <input type="text" id="varCharges" name="varCharges" value="@3.15 @4.6 @6.3 @6.95">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="fixedCharges">Fixed Electricity Charges (<span
+                                style="font-size: 0.76rem;">0-1@₹60.0,
+                                &nbsp;2-4@₹70.0, &nbsp;5-Above@₹80.0</span>)</label>
+                        <input type="text" id="fixedCharges" name="fixedCharges" value="@60 @70 @80">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="extraCharges">Extra charges (excluding meter charges)</label>
+                        <input type="text" id="extraCharges" name="extraCharges" value="198.55">
+                    </div>
+                </div>
 
 
-				<div class="btn">
-					<input id="btn" type="submit" value="Calculate">
-				</div>
-			</form>
+                <div class="btn">
+                    <input id="btn" type="submit" value="Calculate">
+                </div>
+            </form>
 
-			<p id="outcome"></p>
-		</div>
-	</div>
+            <div id="outcome"></div>
+        </div>
+    </div>
 
-	<script>
-		const button = document.getElementById('btn');
-		button.addEventListener("click", function (e) {
+    <script>
+        const button = document.getElementById('btn');
+        button.addEventListener("click", function (e) {
 
-			e.preventDefault();
-			const units = document.getElementById('units').value;
-			const days = document.getElementById('days').value;
-			const contractedLoad = document.getElementById('contractedLoad').value;
-			const varCharges = document.getElementById('varCharges').value;
-			const fixedCharges = document.getElementById('fixedCharges').value;
-			const extraCharges = document.getElementById('extraCharges').value;
+            e.preventDefault();
+            const units = document.getElementById('units').value;
+            const days = document.getElementById('days').value;
+            const contractedLoad = document.getElementById('contractedLoad').value;
+            const varCharges = document.getElementById('varCharges').value;
+            const fixedCharges = document.getElementById('fixedCharges').value;
+            const extraCharges = document.getElementById('extraCharges').value;
 
-			const averageNumberOfDaysInMonth = 30.416541804;
-			const regex = /[+-]?\d+(\.\d+)?/g;
-			const varChargesList = varCharges.match(regex).map(function (v) { return parseFloat(v); });
-			const fixedChargesList = fixedCharges.match(regex).map(function (v) { return parseFloat(v); });
+            const averageNumberOfDaysInMonth = 30.416541804;
+            const regex = /[+-]?\d+(\.\d+)?/g;
+            const varChargesList = varCharges.match(regex).map(function (v) { return parseFloat(v); });
+            const fixedChargesList = fixedCharges.match(regex).map(function (v) { return parseFloat(v); });
 
-			let unitsPer_ = (units * averageNumberOfDaysInMonth) / days;
-			let costPer_ = 0;
-			let flag = true;
+            let unitsPer_ = (units * averageNumberOfDaysInMonth) / days;
+            let costPer_ = 0;
+            let flag = true;
 
-			if (unitsPer_ > 100) {
-				costPer_ = costPer_ + 100 * varChargesList[0];
-				unitsPer_ = unitsPer_ - 100;
-			} else {
-				costPer_ = costPer_ + unitsPer_ * varChargesList[0];
-				flag = false;
-			}
+            if (unitsPer_ > 100) {
+                costPer_ = costPer_ + 100 * varChargesList[0];
+                unitsPer_ = unitsPer_ - 100;
+            } else {
+                costPer_ = costPer_ + unitsPer_ * varChargesList[0];
+                flag = false;
+            }
 
-			if (unitsPer_ > 100) {
-				costPer_ = costPer_ + 100 * varChargesList[1];
-				unitsPer_ = unitsPer_ - 100;
-			} else if (flag) {
-				costPer_ = costPer_ + unitsPer_ * varChargesList[1];
-				flag = false;
-			}
+            if (unitsPer_ > 100) {
+                costPer_ = costPer_ + 100 * varChargesList[1];
+                unitsPer_ = unitsPer_ - 100;
+            } else if (flag) {
+                costPer_ = costPer_ + unitsPer_ * varChargesList[1];
+                flag = false;
+            }
 
-			if (unitsPer_ > 200) {
-				costPer_ = costPer_ + 200 * varChargesList[2];
-				unitsPer_ = unitsPer_ - 200;
-			} else if (flag) {
-				costPer_ = costPer_ + unitsPer_ * varChargesList[2];
-				flag = false;
-			}
+            if (unitsPer_ > 200) {
+                costPer_ = costPer_ + 200 * varChargesList[2];
+                unitsPer_ = unitsPer_ - 200;
+            } else if (flag) {
+                costPer_ = costPer_ + unitsPer_ * varChargesList[2];
+                flag = false;
+            }
 
-			if (flag) {
-				costPer_ = costPer_ + unitsPer_ * varChargesList[3];
-			}
-			const varChargesTotal = (costPer_ * days) / averageNumberOfDaysInMonth;
+            if (flag) {
+                costPer_ = costPer_ + unitsPer_ * varChargesList[3];
+            }
+            const varChargesTotal = (costPer_ * days) / averageNumberOfDaysInMonth;
 
-			let fixedChargesTotal = 0;
+            let fixedChargesTotal = 0;
 
-			if (contractedLoad <= 1) {
-				fixedChargesTotal = (contractedLoad * fixedChargesList[0] * days) / averageNumberOfDaysInMonth;
-			}
+            if (contractedLoad <= 1) {
+                fixedChargesTotal = (contractedLoad * fixedChargesList[0] * days) / averageNumberOfDaysInMonth;
+            }
 
-			if (contractedLoad >= 2 && contractedLoad <= 4) {
-				fixedChargesTotal = (contractedLoad * fixedChargesList[1] * days) / averageNumberOfDaysInMonth;
-			}
+            if (contractedLoad >= 2 && contractedLoad <= 4) {
+                fixedChargesTotal = (contractedLoad * fixedChargesList[1] * days) / averageNumberOfDaysInMonth;
+            }
 
-			if (contractedLoad >= 5) {
-				fixedChargesTotal = (contractedLoad * fixedChargesList[2] * days) / averageNumberOfDaysInMonth;
-			}
+            if (contractedLoad >= 5) {
+                fixedChargesTotal = (contractedLoad * fixedChargesList[2] * days) / averageNumberOfDaysInMonth;
+            }
 
-			const totalElectricityBill = varChargesTotal + fixedChargesTotal + parseFloat(extraCharges);
+            const totalElectricityBill = varChargesTotal + fixedChargesTotal + parseFloat(extraCharges);
 
-			const varChargesTotalRounded = Math.round((varChargesTotal + Number.EPSILON) * 100) / 100;
-			const fixedChargesTotalRounded = Math.round((fixedChargesTotal + Number.EPSILON) * 100) / 100;
-			const extraChargesRounded = Math.round((parseFloat(extraCharges) + Number.EPSILON) * 100) / 100;
-			const totalElectricityBillRounded = Math.round((totalElectricityBill + Number.EPSILON) * 100) / 100
+            const varChargesTotalRounded = Math.round((varChargesTotal + Number.EPSILON) * 100) / 100;
+            const fixedChargesTotalRounded = Math.round((fixedChargesTotal + Number.EPSILON) * 100) / 100;
+            const extraChargesRounded = Math.round((parseFloat(extraCharges) + Number.EPSILON) * 100) / 100;
+            const totalElectricityBillRounded = Math.round((totalElectricityBill + Number.EPSILON) * 100) / 100
 
-			const outcome = document.getElementById('outcome');
+            const outcome = document.getElementById('outcome');
 
-			outcome.innerHTML = `<br>Your electricity bill is ₹${totalElectricityBillRounded} ( <span style="font-size:0.8rem;">Variable Charges : ₹${varChargesTotalRounded}, Fixed Charges : ₹${fixedChargesTotalRounded}, and Extra Charges : ₹${extraChargesRounded}</span> ) `;
-		});
+            outcome.innerHTML = `<p>Your electricity bill is ₹${totalElectricityBillRounded} ( <span style="font-size:0.8rem;">Variable Charges : ₹${varChargesTotalRounded}, Fixed Charges : ₹${fixedChargesTotalRounded}, and Extra Charges : ₹${extraChargesRounded}</span> )</p> `;
+        });
 
-	</script>
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauri-Kunj Tenant</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+            font-family: sans-serif;
+            font-weight: 600;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .45)), url("1.jpg");
+            background-size: cover;
+        }
+
+        .flex-parent {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* .flex-child {} */
+
+        .icon {
+            border: 2.5px solid rgb(102, 65, 16);
+            width: 7em;
+            height: 7em;
+            margin-left: 40px;
+            margin-right: 40px;
+            margin-bottom: 30px;
+            border-radius: 50%;
+            box-shadow: 0px 0px 9px 4px rgb(143, 91, 23);
+            animation: glow 1.5s linear infinite alternate;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .icon:focus,
+        .icon:hover,
+        .icon:active {
+            background: rgba(102, 65, 16, 0.425);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+        }
+
+        .button1 {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .button2 {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .icon div a {
+            text-decoration: none;
+            color: rgb(102, 65, 16);
+        }
+
+        @keyframes glow {
+            to {
+                box-shadow: 0px 0px 30px 20px rgb(102, 65, 16);
+            }
+        }
+
+        .heading-main {
+            text-align: center;
+            margin-top: 6rem;
+            margin-bottom: 4rem;
+            color: rgb(102, 65, 16);
+            font-size: 5rem;
+            font-family: 'Dancing Script', cursive;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="heading-main">
+        Welcome to Tenant Webpage
+    </h1>
+    <div class="flex-parent">
+        <div class="flex-child icon">
+            <div class="button1">
+                <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSfJCAJt9ayXf_XURwt1LYMPgwlaXCY5F1qNqQE1JD01wwTe4w/viewform?usp=sf_link">Tenant
+                    Verification</a>
+            </div>
+        </div>
+        <div class="flex-child icon">
+            <div class="button2">
+                <a href="https://gauri-kunj.github.io/tenant/electricity-bill/">Electricity Bill Calculator</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -102,7 +102,7 @@
             color: #fff;
         }
 
-        #outcome p {
+        #app p {
             background-color: white;
             padding: 10px;
             margin-top: 15px;
@@ -130,6 +130,12 @@
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
+                        <label for="tenant1">Tenant 1 Usage (in kWh)</label>
+                        <input type="text" id="tenant1" name="tenant1">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
                         <label for="">Time Interval (in Days)</label>
                         <input type="text" id="days" name="days">
                     </div>
@@ -140,186 +146,207 @@
                         <input type="text" id="varCharges" name="varCharges" value="@3.4 @4.9 @6.7 @7.35">
                     </div>
                 </div>
-                <div class="form_wrap">
-                    <div class="form_item">
-                        <label for="fixedCharges">Fixed Electricity Charges</label>
-                        <input type="text" id="fixedCharges" name="fixedCharges" value="85">
-                    </div>
-                </div>
                 <div class="btn">
                     <input id="btn" type="submit" value="Calculate">
                 </div>
             </form>
 
-            <div id="outcome"></div>
+            <div id="app"></div>
         </div>
     </div>
 
     <script>
-        const button = document.getElementById('btn');
-        button.addEventListener("click", function (e) {
-
-            e.preventDefault();
-            const units = document.getElementById('units').value;
-            const days = document.getElementById('days').value;
-            const varCharges = document.getElementById('varCharges').value;
-            const fixedCharges = document.getElementById('fixedCharges').value;
-            const regex = /[+-]?\d+(\.\d+)?/g;
-            const varChargesList = varCharges.match(regex).map(function (v) { return parseFloat(v); });
-
-            /**
-             * Calculates electricity charges with pro-rata slab adjustments
-             * @param {number} consumption - Total kWh used
-             * @param {Array} rates - Slab rates in format [{start, end, rate}]
-             * @param {number} proRataFactor - Billing days / (365/12)
-             * @returns {Object} - Total cost and breakdown
-             */
-            function calculateElectricityBill(consumption, rates, proRataFactor) {
-                // Validate inputs
-                if (consumption <= 0) throw new Error("Invalid consumption value");
-                if (!rates.length) throw new Error("No rates provided");
-
-                // Generate pro-rated slabs
-                let adjustedSlabs = [];
-                let currentEnd = 0;
-                
-                rates.forEach((slab, index) => {
-                    const slabRange = slab.end === Infinity 
-                        ? Infinity 
-                        : (slab.end - slab.start);
-                        
-                    const adjustedSize = slabRange * proRataFactor;
-                    const nextEnd = currentEnd + adjustedSize;
-
-                    adjustedSlabs.push({
-                        description: `Slab ${index + 1} (₹${slab.rate}/kWh)`,
-                        range: [currentEnd, nextEnd],
-                        rate: slab.rate
-                    });
-
-                    currentEnd = nextEnd;
-                });
-
-                // Calculate charges
-                let remaining = consumption;
-                let total = 0;
-                const breakdown = [];
-
-                for (const slab of adjustedSlabs) {
-                    if (remaining <= 0) break;
-
-                    const [start, end] = slab.range;
-                    const available = end === Infinity 
-                        ? remaining 
-                        : Math.max(0, end - start);
-                        
-                    const used = Math.min(remaining, available);
-                    const charge = used * slab.rate;
-
-                    breakdown.push({
-                        description: slab.description,
-                        range: `${start.toFixed(2)}-${end === Infinity ? "∞" : end.toFixed(2)} kWh`,
-                        unitsUsed: used.toFixed(4),
-                        charge: charge.toFixed(2)
-                    });
-
-                    total += charge;
-                    remaining -= used;
-                }
-
-                return {
-                    total: Math.round(total * 100) / 100, // Round to 2 decimals
-                    breakdown
-                };
-            }
-
-            // Example usage with detailed explanations
-            function main() {
-                // Input parameters
-
-                const slabRateZerotoHundred = varChargesList[0];
-                const slabRateHundredtoTwoHundred = varChargesList[1];
-                const slabRateTwoHundredtoFourHundred = varChargesList[2];
-                const slabRateFourHundredtoInfinity = varChargesList[3];
-
-                const rates = [
-                    { start: 0, end: 100, rate: slabRateZerotoHundred },    // 100 kWh
-                    { start: 100, end: 200, rate: slabRateHundredtoTwoHundred },  // 100 kWh (not 101-200)
-                    { start: 200, end: 400, rate: slabRateTwoHundredtoFourHundred },  // 200 kWh
-                    { start: 400, end: Infinity, rate: slabRateFourHundredtoInfinity }
-                ];
-                
-                const consumption = units;
-                const billingDays = days;
-                const proRataFactor = billingDays / (365/12);
-
-                // Calculation
-                const result = calculateElectricityBill(consumption, rates, proRataFactor);
-
-                // User-friendly output
-                console.log("⚡ Electricity Bill Calculation Breakdown ⚡\n");
-                console.log(`• Total Consumption: ${consumption} kWh`);
-                console.log(`• Billing Period: ${billingDays} days (Pro-Rata Factor: ${proRataFactor.toFixed(4)})`);
-                console.log("\n── Pro-Rated Slabs Adjustment ──");
-                
-                rates.forEach((slab, i) => {
-                    const originalRange = slab.end === Infinity 
-                        ? `${slab.start}+ kWh` 
-                        : `${slab.start}-${slab.end} kWh`;
-                        
-                    const adjustedRange = result.breakdown[i] ? result.breakdown[i].range : "N/A";
-                    console.log(`Original ${originalRange} ➔ Adjusted to ${adjustedRange}`);
-                        
-                });
-
-                console.log("\n── Cost Calculation ──");
-                result.breakdown.forEach((line, i) => {
-                    console.log(`${line.description}:`);
-                    console.log(`  ${line.unitsUsed.padStart(8)} kWh × ₹${line.charge} = ₹${line.charge}`);
-                });
-
-                console.log("\n💸 Final Total Energy Charges:", `₹${result.total.toFixed(2)}`);
-                const totalBill = result.total + Math.floor(fixedCharges);
-                const outcome = document.getElementById('outcome');
-                outcome.innerHTML = outcome.innerHTML = `
-                    <div style="
-                        background: rgba(255, 255, 255, 0.2);
-                        backdrop-filter: blur(10px);
-                        padding: 20px; 
-                        border-radius: 15px; 
-                        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); 
-                        text-align: center; 
-                        font-family: Arial, sans-serif; 
-                        color: #333; 
-                        margin-top: 20px; 
-                        border: 1px solid rgba(255, 255, 255, 0.3);
-                        animation: fadeIn 0.8s ease-in-out;
+        /**
+        * Calculates electricity charges with pro-rata slab adjustments
+        */
+       function calculateElectricityBill(consumption, rates, proRataFactor) {
+           if (consumption <= 0) throw new Error("Invalid consumption value");
+           if (!rates.length) throw new Error("No rates provided");
+       
+           let adjustedSlabs = [];
+           let currentEnd = 0;
+       
+           rates.forEach((slab, index) => {
+               const slabRange = slab.end === Infinity ? Infinity : (slab.end - slab.start);
+               const adjustedSize = slabRange * proRataFactor; // Apply pro-rata factor
+               const nextEnd = currentEnd + adjustedSize;
+       
+               adjustedSlabs.push({
+                   description: `Slab ${index + 1} (₹${slab.rate}/kWh)`,
+                   range: [currentEnd, nextEnd],
+                   rate: parseFloat(slab.rate) // Ensure numeric conversion
+               });
+       
+               currentEnd = nextEnd;
+           });
+       
+           let remaining = consumption;
+           let total = 0;
+           const breakdown = [];
+       
+           for (const slab of adjustedSlabs) {
+               if (remaining <= 0) break;
+       
+               const [start, end] = slab.range;
+               const available = end === Infinity ? remaining : Math.max(0, end - start);
+               const used = Math.min(remaining, available);
+               const charge = used * slab.rate;
+       
+               breakdown.push({
+                   description: slab.description,
+                   range: `${start.toFixed(2)}-${end === Infinity ? "∞" : end.toFixed(2)} kWh`,
+                   unitsUsed: used.toFixed(4),
+                   charge: charge.toFixed(2),
+                   rate: slab.rate // Include rate for accurate splitting
+               });
+       
+               total += charge;
+               remaining -= used;
+           }
+       
+           return {
+               total: Math.round(total * 100) / 100,
+               breakdown
+           };
+       }
+       
+       /**
+        * Splits electricity charges fairly between two tenants
+        */
+       function splitElectricityBill(tenant1Usage, tenant2Usage, rates, billingDays) {
+           const totalUsage = tenant1Usage + tenant2Usage;
+           if (totalUsage <= 0) throw new Error("Total usage must be greater than zero.");
+           if (tenant1Usage < 0 || tenant2Usage < 0) throw new Error("Usage values cannot be negative.");
+       
+           const proRataFactor = billingDays / (365 / 12); // Apply pro-rata factor
+           const totalBill = calculateElectricityBill(totalUsage, rates, proRataFactor);
+       
+           const tenant1Share = tenant1Usage / totalUsage;
+           const tenant2Share = tenant2Usage / totalUsage;
+       
+           let tenant1Breakdown = [];
+           let tenant2Breakdown = [];
+           let tenant1Total = 0;
+           let tenant2Total = 0;
+       
+           totalBill.breakdown.forEach((slab) => {
+               const slabRate = slab.rate; // Directly use the rate from breakdown
+               const slabUnits = parseFloat(slab.unitsUsed);
+               
+               const tenant1Units = slabUnits * tenant1Share;
+               const tenant2Units = slabUnits * tenant2Share;
+       
+               const tenant1Charge = tenant1Units * slabRate;
+               const tenant2Charge = tenant2Units * slabRate;
+       
+               tenant1Breakdown.push({
+                   description: slab.description,
+                   unitsUsed: tenant1Units.toFixed(4),
+                   charge: tenant1Charge.toFixed(2)
+               });
+       
+               tenant2Breakdown.push({
+                   description: slab.description,
+                   unitsUsed: tenant2Units.toFixed(4),
+                   charge: tenant2Charge.toFixed(2)
+               });
+       
+               tenant1Total += tenant1Charge;
+               tenant2Total += tenant2Charge;
+           });
+       
+           return {
+               tenant1: {
+                   total: Math.round(tenant1Total * 100) / 100,
+                   breakdown: tenant1Breakdown
+               },
+               tenant2: {
+                   total: Math.round(tenant2Total * 100) / 100,
+                   breakdown: tenant2Breakdown
+               },
+               totalBill: totalBill.total
+           };
+       }
+       
+       // Event Listener (with additional validation)
+       document.getElementById('btn').addEventListener("click", function (e) {
+           e.preventDefault();
+       
+           const units = parseFloat(document.getElementById('units').value) || 0;
+           const billingDays = parseFloat(document.getElementById('days').value) || 30;
+           const tenant1Usage = parseFloat(document.getElementById('tenant1').value) || 0;
+           
+           if (units <= 0 || billingDays <= 0 || tenant1Usage < 0) {
+               console.error("Invalid input: Units, billing days, and tenant usage must be positive numbers.");
+               return;
+           }
+       
+           const tenant2Usage = units - tenant1Usage;
+           if (tenant2Usage < 0) {
+               console.error("Invalid input: Tenant 1 usage exceeds total units.");
+               return;
+           }
+       
+           const varCharges = document.getElementById('varCharges').value;
+           const regex = /[+-]?\d+(\.\d+)?/g;
+           const varChargesList = varCharges.match(regex)?.map(parseFloat) || [];
+       
+           if (varChargesList.length < 4) {
+               console.error("Invalid slab rate input. Ensure four values are provided.");
+               return;
+           }
+       
+           const rates = [
+               { start: 0, end: 100, rate: varChargesList[0] },
+               { start: 100, end: 200, rate: varChargesList[1] },
+               { start: 200, end: 400, rate: varChargesList[2] },
+               { start: 400, end: Infinity, rate: varChargesList[3] }
+           ];
+       
+           try {
+               const result = splitElectricityBill(tenant1Usage, tenant2Usage, rates, billingDays);
+               console.log("🔹 Tenant 1 Bill Breakdown:", result.tenant1);
+               console.log("🔹 Tenant 2 Bill Breakdown:", result.tenant2);
+               console.log("🔹 Total Bill:", result.totalBill);
+               document.getElementById('app').innerHTML = `
+                <div style="
+                    background: rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); 
+                    text-align: center; 
+                    font-family: Arial, sans-serif; 
+                    color: #333; 
+                    margin-top: 20px; 
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    animation: fadeIn 0.8s ease-in-out;
                     ">
-                        <p style="font-size: 1.8rem; font-weight: bold; color: #007bff; margin: 0;">
-                        💡 Your Bill is <span style="color: #ff7b00;">₹${totalBill.toFixed(2)}</span>
-                        </p>
-                        <p style="font-size: 1rem; margin-top: 10px; color: #444; line-height: 1.6;">
-                        <span style="display: block; font-size: 1rem; margin-top: 8px;">
-                            <strong style="color: #28a745;">✅ ENERGY CHARGES:</strong> ₹${result.total.toFixed(2)}
-                        </span>
-                        <span style="display: block; font-size: 1rem; margin-top: 8px;">
-                            <strong style="color: #dc3545;">⚡ FIXED/DEMAND CHARGES:</strong> ₹${fixedCharges}
-                        </span>
-                        </p>
-                    </div>
+                    <p style="font-size: 1.8rem; font-weight: bold; color: #007bff; margin: 0;">
+                    💡 Your Total ENERGY CHARGES <span style="color: #ff7b00;">₹${result.totalBill.toFixed(2)}</span>
+                    </p>
+                    <p style="font-size: 1rem; margin-top: 10px; color: #444; line-height: 1.6;">
+                    <span style="display: block; font-size: 1rem; margin-top: 8px;">
+                        <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 1 :</strong> ₹${result.tenant1.total.toFixed(2)}
+                    </span>
+                    <span style="display: block; font-size: 1rem; margin-top: 8px;">
+                        <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 2 :</strong> ₹${result.tenant2.total.toFixed(2)}
+                    </span>
+                    <i style="color: #ff0000;">*This only covers energy charges, excluding fixed and additional charges.</i>
+                    </p>
+                </div>
 
-                    <style>
-                        @keyframes fadeIn {
-                        from { opacity: 0; transform: translateY(-10px); }
-                        to { opacity: 1; transform: translateY(0); }
-                        }
-                    </style>
-                    `;
-            }
-            // Run 
-            main();
-        });
-
+                <style>
+                    @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                    }
+                </style>
+                `;
+           } catch (error) {
+               console.error("Error:", error.message);
+           }
+       });
     </script>
 </body>
 

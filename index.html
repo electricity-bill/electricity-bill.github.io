@@ -434,9 +434,9 @@
     const url = new URL(window.location.href);
 
     // Get a specific parameter by its name
-    const totalUnitsParam = url.searchParams.get('totalUnits');
-    const totalBillParam = url.searchParams.get('totalBill');
-    const buildUnitsParam = url.searchParams.get('buildUnits');
+    const totalUnitsParam = url.searchParams.get('units');
+    const totalBillParam = url.searchParams.get('bill');
+    const buildUnitsParam = url.searchParams.get('consumption');
 
     (function () {
       const form = document.getElementById('userForm');

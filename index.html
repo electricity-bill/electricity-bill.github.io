@@ -80,19 +80,39 @@
       pointer-events: none;
       z-index: -1;
     }
-
+    
     @media (prefers-reduced-motion: reduce) {
       * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  
+    .mainHeading {
+      display: block;
+      width: 60%;
+      margin: 10px auto 14px;
+      padding: 12px 16px;
+      text-align: center;
+      text-wrap: balance; 
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      font-size: 2.4rem;
+      color: var(--fg, #111827);
+      background: color-mix(in oklab, var(--bg, #ffffff) 72%, transparent);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow, 0 6px 20px rgba(0,0,0,0.08));
+      text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+      transition: filter .2s ease, box-shadow .2s ease, background-color .2s ease;
     }
 
     .wrapper {
       width: 100%;
       max-width: var(--container-max);
-      margin: 5rem auto 24px;
+      margin: 3rem auto 24px;
       padding: 16px;
       padding-bottom: calc(16px + env(safe-area-inset-bottom));
     }
-
+    
     .form_container {
       padding: 18px;
       border: 1px solid var(--border);
@@ -391,6 +411,7 @@
   </style>
 </head>
 <body>
+  <h1 class = "mainHeading" id="mainHeading"></h1>
   <div class="wrapper">
     <div class="form_container">
       <form name="form" id="userForm" novalidate>
@@ -434,9 +455,19 @@
     const url = new URL(window.location.href);
 
     // Get a specific parameter by its name
+    const tenantNameParam = url.searchParams.get('tenant');
     const totalUnitsParam = url.searchParams.get('units');
     const totalBillParam = url.searchParams.get('bill');
     const buildUnitsParam = url.searchParams.get('consumption');
+    const mainHeading = document.getElementById("mainHeading");
+
+    if(tenantNameParam !== null){
+      console.log(tenantNameParam);
+      mainHeading.innerHTML = `Welcome ${String(tenantNameParam).charAt(0).toUpperCase() + String(tenantNameParam).slice(1)} Ji!`;
+    }
+    else{
+      mainHeading.innerHTML = `Welcome Tenant!`;
+    }
 
     (function () {
       const form = document.getElementById('userForm');

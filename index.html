@@ -581,7 +581,7 @@
                     <span class="var">₹${totalBill.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ₹${averageUnits.toFixed(2)} प्रति kWh</span>.
                   </p>
                   <p>
-                    2. अब, हम आपका विशेष हिस्सा का हिसाब लगाते हैं।
+                    2. अब, हम आपके विशेष हिस्से का हिसाब लगाते हैं।
                     आपकी खपत <span class="var">${buildUnits.toFixed(2)}</span> kWh थी।
                     अतः, आपकी देय राशि है:
                     <span class="var">${buildUnits.toFixed(2)}</span> kWh ×
@@ -631,7 +631,7 @@
             btn.setAttribute('aria-label', 'Switch to English');
             try { localStorage.setItem('calcLang', 'hi'); } catch {}
           } else {
-            btn.textContent = 'Hindi';
+            btn.textContent = 'हिन्दी';
             btn.setAttribute('aria-label', 'Switch to Hindi');
             try { localStorage.setItem('calcLang', 'en'); } catch {}
           }

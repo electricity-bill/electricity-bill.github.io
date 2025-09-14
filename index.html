@@ -84,7 +84,11 @@
     @media (prefers-reduced-motion: reduce) {
       * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
-  
+    .var{
+      background-color: #374151;
+      border-radius: 2.5px;
+      padding: 1.5px;
+    }
     .mainHeading {
       display: block;
       width: 60%;
@@ -512,10 +516,11 @@
         const buildUnits = parseNum(buildUnitsEl.value);
 
         const averageUnits = totalBill / totalUnits;
-        const result = buildUnits * averageUnits;
+        const yourShare = buildUnits/totalUnits;
+        const result = (totalBill*buildUnits)/totalUnits;
 
         const summaryText = [
-          `Average cost per kWh: ₹${averageUnits.toFixed(2)}/kWh`,
+          `Your respective share: ${yourShare.toFixed(2)}`,
           `Consumption: ${buildUnits.toFixed(2)} kWh`,
           `Payable amount: ₹${result.toFixed(2)}`
         ].join('\\n');
@@ -546,8 +551,8 @@
 
             <dl class="stats-grid">
               <div class="stat">
-                <dt>Average cost</dt>
-                <dd>₹${averageUnits.toFixed(2)}/kWh</dd>
+                <dt>Your Share</dt>
+                <dd>${(buildUnits/totalUnits).toFixed(2)}</dd>
               </div>
               <div class="stat">
                 <dt>Consumption</dt>
@@ -584,7 +589,7 @@
             </div>
             <div class="popover-inner">
               <p class="hint hint-engraved">Press the button above to switch between English and Hindi.</p>
-              <div class="content">
+              <!-- <div class="content">
                 <div id="exp-en" lang="en">
                   <p>
                     1. First, find the average cost per unit:
@@ -618,6 +623,31 @@
                     <span class="var">${buildUnits.toFixed(2)}</span> kWh ×
                     <span class="var">₹${averageUnits.toFixed(2)}/kWh</span> =
                     <span class="var">₹${result.toFixed(2)}</span>.
+                  </p>
+                </div>
+              </div> -->
+              <div class="content">
+                <div id="exp-en" lang="en">
+                  <p>
+                    1. Your part of the units:<br>
+                    <span class="var">${buildUnits.toFixed(2)}</span> out of <span class="var">${totalUnits.toFixed(2)}</span><br>
+                    As a decimal share: <span class="var">${buildUnits.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ${yourShare.toFixed(5)}</span>
+                  </p>
+                  <p>
+                    2. Apply this share to the full bill:<br>
+                    <span class="var">${yourShare.toFixed(5)} × ₹${totalBill.toFixed(2)} = ₹${result.toFixed(2)}</span>
+                  </p>
+                </div>
+
+                <div id="exp-hi" lang="hi" hidden>
+                  <p>
+                    1. आपके यूनिट का हिस्सा:<br>
+                    <span class="var">${totalUnits.toFixed(2)}</span> में से <span class="var">${buildUnits.toFixed(2)}</span><br>
+                    दशमलव में हिस्सा: <span class="var">${buildUnits.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ${yourShare.toFixed(5)}</span>
+                  </p>
+                  <p>
+                    2. अब, इस हिस्से को पूरे बिल पर लगाएँ:<br>
+                    <span class="var">${yourShare.toFixed(5)} × ₹${totalBill.toFixed(2)} = ₹${result.toFixed(2)}</span>
                   </p>
                 </div>
               </div>
@@ -727,3 +757,5 @@
 </footer>
 </body>
 </html>
+
+

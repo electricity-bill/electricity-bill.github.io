@@ -300,7 +300,6 @@
       color: var(--fg);
     }
     .stat.accent dd { color: #16a34a; font-weight: 900; }
-    .summary-result {border: 1px solid #16a34a;}
 
     /* Centered modal-like popover with translucent sheet */
     [popover].popover-card {
@@ -564,7 +563,7 @@
                 <dt>Consumption</dt>
                 <dd>${buildUnits.toFixed(2)} kWh</dd>
               </div>
-              <div class="stat accent summary-result">
+              <div class="stat accent">
                 <dt>Payable amount</dt>
                 <dd>₹${result.toFixed(2)}</dd>
               </div>

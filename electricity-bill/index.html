@@ -130,20 +130,38 @@
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
-                        <label for="tenant1">Tenant 1 Usage (in kWh)</label>
-                        <input type="text" id="tenant1" name="tenant1">
+                        <label for="energyCharges">Energy Charges</label>
+                        <input type="text" id="energyCharges" name="energyCharges">
                     </div>
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
-                        <label for="">Time Interval (in Days)</label>
+                        <label for="totalAmount">Total Bill Amount</label>
+                        <input type="text" id="totalAmount" name="totalAmount">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="tenant">Tenant Usage (in kWh)</label>
+                        <input type="text" id="tenant" name="tenant">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
+                        <label for="days">Time Interval (in Days)</label>
                         <input type="text" id="days" name="days">
                     </div>
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
+                        <label for="relaxedUnits">Relaxed Units</label>
+                        <input type="text" id="relaxedUnits" name="relaxedUnits" value="0">
+                    </div>
+                </div>
+                <div class="form_wrap">
+                    <div class="form_item">
                         <label for="varCharges">Variable Electricity Charges</label>
-                        <input type="text" id="varCharges" name="varCharges" value="@3.4 @4.9 @6.7 @7.35">
+                        <input type="text" id="varCharges" name="varCharges" value="@3.65 @5.25 @7.15 @7.8">
                     </div>
                 </div>
                 <div class="btn">
@@ -159,10 +177,11 @@
         /**
         * Calculates electricity charges with pro-rata slab adjustments
         */
-       function calculateElectricityBill(consumption, rates, proRataFactor) {
+       function calculateElectricityBill(consumption, rates, proRataFactor, forTenant) {
+
            if (consumption <= 0) throw new Error("Invalid consumption value");
            if (!rates.length) throw new Error("No rates provided");
-       
+           if(forTenant)proRataFactor = proRataFactor*0.5;
            let adjustedSlabs = [];
            let currentEnd = 0;
        
@@ -213,80 +232,67 @@
        /**
         * Splits electricity charges fairly between two tenants
         */
-       function splitElectricityBill(tenant1Usage, tenant2Usage, rates, billingDays) {
-           const totalUsage = tenant1Usage + tenant2Usage;
-           if (totalUsage <= 0) throw new Error("Total usage must be greater than zero.");
-           if (tenant1Usage < 0 || tenant2Usage < 0) throw new Error("Usage values cannot be negative.");
-       
-           const proRataFactor = billingDays / (365 / 12); // Apply pro-rata factor
-           const totalBill = calculateElectricityBill(totalUsage, rates, proRataFactor);
-       
-           const tenant1Share = tenant1Usage / totalUsage;
-           const tenant2Share = tenant2Usage / totalUsage;
-       
-           let tenant1Breakdown = [];
-           let tenant2Breakdown = [];
-           let tenant1Total = 0;
-           let tenant2Total = 0;
-       
-           totalBill.breakdown.forEach((slab) => {
-               const slabRate = slab.rate; // Directly use the rate from breakdown
-               const slabUnits = parseFloat(slab.unitsUsed);
-               
-               const tenant1Units = slabUnits * tenant1Share;
-               const tenant2Units = slabUnits * tenant2Share;
-       
-               const tenant1Charge = tenant1Units * slabRate;
-               const tenant2Charge = tenant2Units * slabRate;
-       
-               tenant1Breakdown.push({
-                   description: slab.description,
-                   unitsUsed: tenant1Units.toFixed(4),
-                   charge: tenant1Charge.toFixed(2)
-               });
-       
-               tenant2Breakdown.push({
-                   description: slab.description,
-                   unitsUsed: tenant2Units.toFixed(4),
-                   charge: tenant2Charge.toFixed(2)
-               });
-       
-               tenant1Total += tenant1Charge;
-               tenant2Total += tenant2Charge;
-           });
-       
-           return {
-               tenant1: {
-                   total: Math.round(tenant1Total * 100) / 100,
-                   breakdown: tenant1Breakdown
-               },
-               tenant2: {
-                   total: Math.round(tenant2Total * 100) / 100,
-                   breakdown: tenant2Breakdown
-               },
-               totalBill: totalBill.total
-           };
+       function splitElectricityBill(totalUnits, tenant1Usage, tenant2Usage, relaxedUnits, rates, billingDays) {
+        
+        tenant2Usage = tenant2Usage - relaxedUnits;
+        let energyCharges = 0;
+        let forTenant = true;   
+        const avergaeDaysPerMonth = 30.417;
+        const proRataFactor = billingDays / avergaeDaysPerMonth; // Apply pro-rata factor
+        const breakdown = [];
+        const breakdownForTenant1 = [];
+        const breakdownForTenant2 = [];
+
+        if (totalUnits <= 0) throw new Error("Total usage must be greater than zero.");
+        
+        if(tenant1Usage<=0 || tenant2Usage<=0){
+            forTenant = false;
+            const totalEnergyCharges = calculateElectricityBill(totalUnits, rates, proRataFactor, forTenant);
+            return {
+                energyCharges : totalEnergyCharges.total,
+                breakdown : totalEnergyCharges.breakdown
+            }
+        }
+        
+        if (totalUnits < (tenant1Usage + tenant2Usage)) throw new Error("Invalid value for total units consumed");
+        if (tenant1Usage < 0 || tenant2Usage < 0) throw new Error("Usage values cannot be negative.");
+
+        const totalEnergyChargesForTenant1 = calculateElectricityBill(tenant1Usage, rates, proRataFactor, forTenant);
+        const totalEnergyChargesForTenant2 = calculateElectricityBill(tenant2Usage, rates, proRataFactor, forTenant);
+        
+        return {
+            totalEnergyChargesForTenant1 : totalEnergyChargesForTenant1.total,
+            breakdownForTenant1 : totalEnergyChargesForTenant1.breakdown, 
+            totalEnergyChargesForTenant2 : totalEnergyChargesForTenant2.total,
+            breakdownForTenant2 : totalEnergyChargesForTenant2.breakdown
+        };
+        
        }
        
        // Event Listener (with additional validation)
        document.getElementById('btn').addEventListener("click", function (e) {
+
            e.preventDefault();
        
            const units = parseFloat(document.getElementById('units').value) || 0;
+           const totalEnergyCharges = parseFloat(document.getElementById('energyCharges').value) || 0;
+           const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
            const billingDays = parseFloat(document.getElementById('days').value) || 30;
-           const tenant1Usage = parseFloat(document.getElementById('tenant1').value) || 0;
-           
-           if (units <= 0 || billingDays <= 0 || tenant1Usage < 0) {
+           const tenantUsage = parseFloat(document.getElementById('tenant').value) || 0;
+           const relaxedUnits = parseFloat(document.getElementById('relaxedUnits').value) || 0;\
+
+           if (units <= 0 || billingDays <= 0 || tenantUsage < 0) {
                console.error("Invalid input: Units, billing days, and tenant usage must be positive numbers.");
                return;
            }
        
-           const tenant2Usage = units - tenant1Usage;
-           if (tenant2Usage < 0) {
+           const otherTenantUsage = units - tenantUsage;
+           if (otherTenantUsage < 0) {
                console.error("Invalid input: Tenant 1 usage exceeds total units.");
                return;
            }
-       
+           
+           
            const varCharges = document.getElementById('varCharges').value;
            const regex = /[+-]?\d+(\.\d+)?/g;
            const varChargesList = varCharges.match(regex)?.map(parseFloat) || [];
@@ -304,50 +310,89 @@
            ];
        
            try {
-               const result = splitElectricityBill(tenant1Usage, tenant2Usage, rates, billingDays);
-               console.log("🔹 Tenant 1 Bill Breakdown:", result.tenant1);
-               console.log("🔹 Tenant 2 Bill Breakdown:", result.tenant2);
-               console.log("🔹 Total Bill:", result.totalBill);
-               document.getElementById('app').innerHTML = `
-                <div style="
-                    background: rgba(255, 255, 255, 0.2);
-                    backdrop-filter: blur(10px);
-                    padding: 20px; 
-                    border-radius: 15px; 
-                    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); 
-                    text-align: center; 
-                    font-family: Arial, sans-serif; 
-                    color: #333; 
-                    margin-top: 20px; 
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    animation: fadeIn 0.8s ease-in-out;
-                    ">
-                    <p style="font-size: 1.8rem; font-weight: bold; color: #007bff; margin: 0;">
-                    💡 Your Total ENERGY CHARGES <span style="color: #ff7b00;">₹${result.totalBill.toFixed(2)}</span>
-                    </p>
-                    <p style="font-size: 1rem; margin-top: 10px; color: #444; line-height: 1.6;">
-                    <span style="display: block; font-size: 1rem; margin-top: 8px;">
-                        <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 1 :</strong> ₹${result.tenant1.total.toFixed(2)}
-                    </span>
-                    <span style="display: block; font-size: 1rem; margin-top: 8px;">
-                        <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 2 :</strong> ₹${result.tenant2.total.toFixed(2)}
-                    </span>
-                    <i style="color: #ff0000;">*This only covers energy charges, excluding fixed and additional charges.</i>
-                    </p>
-                </div>
+               const result = splitElectricityBill(units, tenantUsage, otherTenantUsage,relaxedUnits, rates, billingDays);
+               console.log("🔹 Energy Charges:", result);
+               console.log(" Extra Charger Per Tenant:", (totalAmount-totalEnergyCharges)*0.5);
+              
+            //    console.log("🔹 Total Bill:", result.totalBill);
+            //    document.getElementById('app').innerHTML = `
+            //     <div style="
+            //         background: rgba(255, 255, 255, 0.2);
+            //         backdrop-filter: blur(10px);
+            //         padding: 20px; 
+            //         border-radius: 15px; 
+            //         box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); 
+            //         text-align: center; 
+            //         font-family: Arial, sans-serif; 
+            //         color: #333; 
+            //         margin-top: 20px; 
+            //         border: 1px solid rgba(255, 255, 255, 0.3);
+            //         animation: fadeIn 0.8s ease-in-out;
+            //         ">
+            //         <p style="font-size: 1.8rem; font-weight: bold; color: #007bff; margin: 0;">
+            //         💡 Your Total ENERGY CHARGES <span style="color: #ff7b00;">₹${result.totalBill.toFixed(2)}</span>
+            //         </p>
+            //         <p style="font-size: 1rem; margin-top: 10px; color: #444; line-height: 1.6;">
+            //         <span style="display: block; font-size: 1rem; margin-top: 8px;">
+            //             <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 1 :</strong> ₹${result.tenant1.total.toFixed(2)}
+            //         </span>
+            //         <span style="display: block; font-size: 1rem; margin-top: 8px;">
+            //             <strong style="color: #28a745;">✅ ENERGY CHARGES Tenant 2 :</strong> ₹${result.tenant2.total.toFixed(2)}
+            //         </span>
+            //         <i style="color: #ff0000;">*This only covers energy charges, excluding fixed and additional charges.</i>
+            //         </p>
+            //     </div>
 
-                <style>
-                    @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                    }
-                </style>
-                `;
+            //     <style>
+            //         @keyframes fadeIn {
+            //         from { opacity: 0; transform: translateY(-10px); }
+            //         to { opacity: 1; transform: translateY(0); }
+            //         }
+            //     </style>
+            //     `;
            } catch (error) {
                console.error("Error:", error.message);
            }
        });
     </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 
 </html>

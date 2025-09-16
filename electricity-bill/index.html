@@ -95,7 +95,7 @@
       display: block;
       width: 60%;
       margin: 10px auto 14px;
-      padding: 12px 16px;
+      padding: 3px;
       text-align: center;
       text-wrap: balance; 
       font-weight: 700;
@@ -451,7 +451,7 @@
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
-                        <label for="totalAmount">Total Bill Amount</label>
+                        <label for="totalAmount">Total Bill Amount (₹)</label>
                         <input type="number" id="totalAmount" name="totalAmount" inputmode="decimal" min="0.01" step="0.01" required />
                     </div>
                 </div>
@@ -475,7 +475,7 @@
                 </div>
                 <div class="form_wrap">
                     <div class="form_item">
-                        <label for="varCharges">Variable Electricity Charges</label>
+                        <label for="varCharges">Variable Electricity Charges (₹)</label>
                         <input type="text" id="varCharges" name="varCharges" value="@3.65 @5.25 @7.15 @7.8" required />
                     </div>
                 </div>
@@ -504,7 +504,6 @@
         const relaxedUnitsParam = url.searchParams.get('relax');
 
         if(tenantNameParam !== null){
-            console.log(tenantNameParam);
             mainHeading.innerHTML = `Bill calculation for ${tenantNameParam} set!`;
         }
         else{
@@ -663,18 +662,45 @@
        
            try {
                const result = splitElectricityBill(units, tenantUsage, tenantNameParam, otherTenantUsage, relaxedUnits, rates, billingDays);
+               let energyChargesResult = 0;
+               let totalChargesResult = 0;
+               let extraChargesResult = 0;
                if(Object.keys(result).length == 4){
-                console.log("Energy Charges:", result.totalEnergyChargesForTenant);
-                console.log("Extra Charger Per Tenant:", (totalAmount - result.totalEnergyChargesForTenant - result.totalEnergyChargesForOtherTenant)*0.5);
+                energyChargesResult = result.totalEnergyChargesForTenant;
+                extraChargesResult = (totalAmount - result.totalEnergyChargesForTenant - result.totalEnergyChargesForOtherTenant)*0.5;
                }
                else{
-                console.log("Energy Charges:", result.energyCharges);
-                console.log("Extra Charger Per Tenant:", (totalAmount - result.energyCharges));
+                energyChargesResult = result.energyCharges;
+                extraChargesResult = totalAmount - result.energyCharges;
                }
                
+               document.getElementById('app').innerHTML = `
+                <section class="summary-card panel" aria-labelledby="sum-title">
+                    <div class="summary-header">
+                    <div class="summary-title">
+                        <h3 id="sum-title">Summary</h3>
+                    </div>
+                    </div>
+                    <dl class="stats-grid">
+                    <div class="stat">
+                        <dt>Energy Charges</dt>
+                        <dd>₹${(energyChargesResult).toFixed(2)}</dd>
+                    </div>
+                    <div class="stat">
+                        <dt>Consumption</dt>
+                        <dd>${tenantUsage.toFixed(2)} kWh</dd>
+                    </div>
+                    <div class="stat accent result-stats-grid">
+                        <dt>Payable amount</dt>
+                        <dd>₹${(energyChargesResult + extraChargesResult).toFixed(2)}</dd>
+                    </div>
+                    </dl>
+
+                    <p id="sum-live" class="visually-hidden" aria-live="polite"></p>
+                </section>`
               
             //    console.log("🔹 Total Bill:", result.totalBill);
-            //    document.getElementById('app').innerHTML = `
+            //    document.getElementById('app').innerHTML = 
             //     <div style="
             //         background: rgba(255, 255, 255, 0.2);
             //         backdrop-filter: blur(10px);

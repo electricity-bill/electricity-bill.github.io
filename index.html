@@ -6,466 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
   <title>Electricity Bill</title>
-
-  <style>
-    :root {
-      color-scheme: light dark;
-
-      --container-max: 560px;
-      --radius-lg: 16px;
-      --shadow: 0 6px 20px rgba(0,0,0,0.08);
-
-      --bg: #ffffff;
-      --fg: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-
-      --card-bg: rgba(255,255,255,0.66);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.45);
-
-      --btn-bg: #1E40AF;
-      --btn-bg-hover: #1D4ED8;
-      --btn-fg: #ffffff;
-
-      --toggle-bg: #374151;
-      --toggle-bg-active: #111827;
-      --toggle-fg: #ffffff;
-      --toggle-border: #111827;
-
-      --focus-ring: 3px solid rgba(37, 99, 235, 0.4);
-
-      --bg-overlay: 0.25;
-
-      /* Ticker variables */
-      --ticker-speed: 20s;   /* slow eye-catching speed */
-      --ticker-gap: 28px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0b0d10;
-        --fg: #e5e7eb;
-        --muted: #9aa3af;
-        --border: #1f2937;
-        --card-bg: rgba(8,10,14,0.60);
-        --glass-border: 1px solid rgba(255, 255, 255, 0.12);
-
-        --btn-bg: #2563EB;
-        --btn-bg-hover: #1D4ED8;
-        --btn-fg: #ffffff;
-
-        --toggle-bg: #111827;
-        --toggle-bg-active: #0B1220;
-        --toggle-fg: #e5e7eb;
-        --toggle-border: #374151;
-
-        --bg-overlay: 0.38;
-        --shadow: 0 10px 24px rgba(0,0,0,0.6);
-      }
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      color: var(--fg);
-      font: 600 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      background: url("1.jpg") center/cover no-repeat fixed;
-      position: relative;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(
-        rgba(255, 255, 255, var(--bg-overlay)),
-        rgba(255, 255, 255, var(--bg-overlay))
-      );
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    /* Removed the global “turn off all animations” block so the ticker is never unintentionally disabled */
-
-    .var{
-      border-radius: 2px;
-      padding: 1.2px;
-      color: var(--bg);
-      background-color: var(--fg);
-    }
-    .mainHeading {
-      display: block;
-      width: 60%;
-      margin: 10px auto 14px;
-      padding: 12px 16px;
-      text-align: center;
-      text-wrap: balance; 
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      font-size: 2.4rem;
-      color: var(--fg, #111827);
-      background: color-mix(in oklab, var(--bg, #ffffff) 72%, transparent);
-      border: 1px solid var(--border, #e5e7eb);
-      border-radius: 16px;
-      backdrop-filter: blur(8px);
-      box-shadow: var(--shadow, 0 6px 20px rgba(0,0,0,0.08));
-      text-shadow: 0 1px 0 rgba(255,255,255,0.45);
-      transition: filter .2s ease, box-shadow .2s ease, background-color .2s ease;
-    }
-
-    .wrapper {
-      width: 100%;
-      max-width: var(--container-max);
-      margin: 3rem auto 24px;
-      padding: 16px;
-      padding-bottom: calc(16px + env(safe-area-inset-bottom));
-    }
-    
-    .form_container {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      box-shadow: var(--shadow);
-    }
-
-    .heading {
-      background: #015a80;
-      color: white;
-      text-align: center;
-      margin: -18px -18px 14px -18px;
-      padding: 14px;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    }
-    .heading h2 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
-    .form_wrap { margin-bottom: 14px; }
-    .form_item label {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--fg);
-      font-weight: 650;
-    }
-
-    .form_item input[type="number"] {
-      width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
-      font-size: 16px;
-      border: 1px solid #c7ccd5;
-      border-radius: 10px;
-      background: #ffffff;
-      color: #111827;
-    }
-    .form_item input[type="number"]:focus { outline: var(--focus-ring); border-color: #2563eb; }
-    @media (prefers-color-scheme: dark) {
-      .form_item input[type="number"] { background: #0f172a; color: var(--fg); border-color: #1f2937; }
-    }
-
-    .btn input[type="submit"] {
-      display: inline-block;
-      width: 100%;
-      min-height: 48px;
-      background: var(--btn-bg);
-      color: var(--btn-fg);
-      border: 1px solid transparent;
-      padding: 12px 14px;
-      font-size: 16px;
-      letter-spacing: 0.3px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: filter .2s ease, transform .06s ease, background-color .2s ease;
-    }
-    .btn input[type="submit"]:hover { background: var(--btn-bg-hover); }
-    .btn input[type="submit"]:active { transform: translateY(1px); }
-    .btn input[type="submit"]:focus-visible { outline: var(--focus-ring); }
-
-    #app { margin-top: 14px; }
-
-    .panel {
-      width: 100%;
-      background: var(--bg);
-      color: var(--fg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .summary-card { margin-bottom: 14px; }
-    .summary-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-    .summary-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .summary-title h3 {
-      margin: 0;
-      font-weight: 900;
-      font-size: 1.35rem;
-    }
-    .summary-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      appearance: none;
-      min-height: 40px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--toggle-border);
-      background: var(--toggle-bg);
-      color: var(--toggle-fg);
-      font-size: 0.92rem;
-      cursor: pointer;
-      transition: background-color .2s ease, transform .06s ease, box-shadow .2s ease;
-    }
-    .action-btn:hover { filter: brightness(1.05); }
-    .action-btn:active { transform: translateY(1px); }
-    .action-btn:focus-visible { outline: var(--focus-ring); }
-
-    /* Icon-only, borderless hint button with glow on open */
-    .icon-btn.hint {
-      appearance: none;
-      min-width: 40px;
-      min-height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-      border: none;
-      background: transparent;
-      color: var(--fg);
-      opacity: 0.9;
-      cursor: pointer;
-      transition: color .2s ease, opacity .2s ease, text-shadow .2s ease, transform .06s ease;
-    }
-    .icon-btn.hint:hover { opacity: 1; }
-    .icon-btn.hint:active { transform: translateY(1px); }
-    .icon-btn.hint:focus-visible { outline: var(--focus-ring); border-radius: 10px; }
-    .icon-btn.hint.is-active {
-      color: #f59e0b;
-      text-shadow:
-        0 0 6px rgba(245, 158, 11, 0.75),
-        0 0 14px rgba(245, 158, 11, 0.55);
-    }
-    .hint-engraved {
-      font-size: 0.84rem;
-      letter-spacing: 0.1px;
-      margin-top: 5px;
-      text-shadow:
-        0.5px 0.5px 0 rgba(255,255,255,0.55),
-        -0.5px -0.5px 0 rgba(0,0,0,0.10);
-      opacity: 0.75;
-    }
-    @media (prefers-color-scheme: dark) {
-      .hint-engraved {
-        text-shadow:
-          0.5px 0.5px 0 rgba(0,0,0,0.45),
-          -0.5px -0.5px 0 rgba(255,255,255,0.10);
-      }
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px 12px;
-      margin: 8px 0 0 0;
-    }
-    .stats-grid .stat {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      background: var(--card-bg);
-    }
-    .stats-grid dt {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .stats-grid dd {
-      margin: 0;
-      font-size: clamp(1rem, 0.95rem + 0.4vw, 1.15rem);
-      font-weight: 800;
-      color: var(--fg);
-    }
-    .stat.accent dd { color: #16a34a; font-weight: 900; }
-    .stats-grid .result-stats-grid{
-      border: 1.5px solid #16a34a;
-    }
-
-    /* Centered modal-like popover with translucent sheet */
-    [popover].popover-card {
-      position: fixed;
-      inset: auto;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.98);
-      margin: 0;
-      max-width: min(92vw, var(--container-max));
-      width: min(92vw, var(--container-max));
-      background: color-mix(in oklab, var(--bg) 72%, transparent);
-      backdrop-filter: blur(8px);
-      padding: 0;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.28);
-      opacity: 0;
-      transition: opacity .18s ease, transform .18s ease;
-    }
-    :popover-open.popover-card {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    .popover-card::backdrop {
-      background: rgba(3, 6, 12, 0.45);
-      backdrop-filter: blur(2px);
-    }
-
-    .popover-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      background: color-mix(in oklab, var(--bg) 85%, transparent);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    }
-    .popover-header h3 {
-      margin: 0;
-      font-weight: 900;
-      font-size: clamp(1.25rem, 1rem + 1vw, 1.6rem);
-    }
-    .popover-inner { padding: 14px 16px; }
-    .close-btn { min-width: 40px; min-height: 40px; padding: 8px; }
-
-    @media (prefers-reduced-motion: reduce) {
-      /* Scope reductions; do not kill the ticker */
-      [popover].popover-card { transition: none !important; }
-    }
-
-    .visually-hidden {
-      position: absolute !important;
-      height: 1px; width: 1px;
-      overflow: hidden;
-      clip: rect(1px, 1px, 1px, 1px);
-      white-space: nowrap;
-      clip-path: inset(50%);
-    }
-
-    @media print {
-      body::before { display: none !important; }
-      form, .btn, .summary-actions { display: none !important; }
-      .wrapper { max-width: 720px; }
-      .form_container { box-shadow: none; background: #fff; }
-      .ticker { display: none !important; }
-    }
-
-    .fallback-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(3, 6, 12, 0.45);
-      backdrop-filter: blur(2px);
-      display: none;
-      z-index: 2147483637;
-    }
-    .fallback-overlay.is-open { display: block; }
-    .fallback-modal {
-      position: fixed;
-      max-width: min(92vw, var(--container-max));
-      width: min(92vw, var(--container-max));
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2147483638;
-      background: color-mix(in oklab, var(--bg) 72%, transparent);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.28);
-      display: none;
-    }
-    .fallback-modal.is-open { display: block; }
-
-    .site-footer {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 12px 16px;
-      margin-top: 16px;
-    }
-    .site-footer p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: rgba(17,24,39,0.8);
-      background: color-mix(in oklab, var(--bg, #fff) 92%, transparent);
-      border: 1px solid var(--border, #e5e7eb);
-      border-radius: 10px;
-      padding: 6px 10px;
-      backdrop-filter: blur(4px);
-    }
-    @media (prefers-color-scheme: dark) {
-      .site-footer p {
-        color: rgba(229,231,235,0.85);
-      }
-    }
-
-    /* ===== Ticker CSS (final) ===== */
-    .ticker {
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      margin-top: 8px;
-      padding: 6px 0;
-      background: color-mix(in oklab, var(--bg, #fff) 92%, transparent);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      /* Optional fade edges for aesthetics */
-      mask-image: linear-gradient(to right, transparent 0, black 8%, black 92%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, transparent 0, black 8%, black 92%, transparent 100%);
-    }
-    .ticker__inner {
-      display: flex;
-      width: max-content; /* allow content to size naturally */
-      will-change: transform;
-      animation: ticker-marquee var(--ticker-speed) linear infinite; /* always running */
-    }
-    .ticker__group {
-      display: flex;
-      align-items: center;
-      gap: var(--ticker-gap);
-      flex: 0 0 auto; /* do not shrink */
-      padding-inline: 12px;
-      white-space: nowrap;
-    }
-    .ticker__item {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--fg);
-    }
-    .ticker__item button.icon-btn.hint { min-width: 28px; min-height: 28px; padding: 4px; }
-
-    @keyframes ticker-marquee {
-      from { transform: translate3d(0, 0, 0); }
-      to   { transform: translate3d(-50%, 0, 0); } /* second group slides into view */
-    }
-    /* ================================= */
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Global SVG sprite (define once, reuse everywhere) -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;">
+    <defs>
+      <symbol id="icon-bulb" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+      </symbol>
+    </defs>
+  </svg>
+
   <h1 class="mainHeading" id="mainHeading"></h1>
   <div class="wrapper">
     <div class="form_container">
@@ -509,18 +61,16 @@
   <script>
     const url = new URL(window.location.href);
 
-    // Get a specific parameter by its name
+    // Params
     const tenantNameParam = url.searchParams.get('tenant');
     const totalUnitsParam = url.searchParams.get('units');
     const totalBillParam = url.searchParams.get('bill');
     const buildUnitsParam = url.searchParams.get('consumption');
     const mainHeading = document.getElementById("mainHeading");
 
-    if(tenantNameParam !== null){
-      console.log(tenantNameParam);
+    if (tenantNameParam !== null) {
       mainHeading.innerHTML = `Welcome ${String(tenantNameParam).charAt(0).toUpperCase() + String(tenantNameParam).slice(1)} Ji!`;
-    }
-    else{
+    } else {
       mainHeading.innerHTML = `Welcome Tenant!`;
     }
 
@@ -567,8 +117,8 @@
         const buildUnits = parseNum(buildUnitsEl.value);
 
         const averageUnits = totalBill / totalUnits;
-        const yourShare = buildUnits/totalUnits;
-        const result = (totalBill*buildUnits)/totalUnits;
+        const yourShare = buildUnits / totalUnits;
+        const result = (totalBill * buildUnits) / totalUnits;
 
         const summaryText = [
           `Your respective share: ${yourShare.toFixed(2)}`,
@@ -581,7 +131,6 @@
             <div class="summary-header">
               <div class="summary-title">
                 <h3 id="sum-title">Summary</h3>
-                <!-- Icon-only hint button (glows when open) -->
                 <button
                   type="button"
                   class="icon-btn hint"
@@ -589,8 +138,8 @@
                   aria-label="Show calculation details"
                   aria-expanded="false"
                   popovertarget="calc-pop">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+                  <svg width="30" height="30" aria-hidden="true" focusable="false">
+                    <use href="#icon-bulb"></use>
                   </svg>
                 </button>
               </div>
@@ -625,7 +174,7 @@
           <div id="calc-pop" popover class="panel popover-card" aria-labelledby="exp-title">
             <div class="popover-header">
               <h3 id="exp-title">Calculation</h3>
-              <div style="display:flex; gap:8px; align-items:center;">
+              <div>
                 <button
                   id="langToggle"
                   class="action-btn"
@@ -672,6 +221,12 @@
             </div>
           </div>
         `;
+
+        // Swap ticker from pre-calc to post-calc after successful calculation
+        const pre = document.getElementById('tickerPre');
+        const post = document.getElementById('tickerPost');
+        if (pre) pre.hidden = true;
+        if (post) post.hidden = false;
 
         const copyBtn = document.getElementById('copySummary');
         const printBtn = document.getElementById('printSummary');
@@ -746,20 +301,20 @@
 
           const openFallback = () => {
             modal.classList.add('is-open');
-            document.getElementById('fallbackOverlay').classList.add('is-open');
+            fallbackOverlay.classList.add('is-open');
             hintBtn.classList.add('is-active');
             hintBtn.setAttribute('aria-expanded', 'true');
           };
           const closeFallback = () => {
             modal.classList.remove('is-open');
-            document.getElementById('fallbackOverlay').classList.remove('is-open');
+            fallbackOverlay.classList.remove('is-open');
             hintBtn.classList.remove('is-active');
             hintBtn.setAttribute('aria-expanded', 'false');
           };
 
           hintBtn.removeAttribute('popovertarget');
           hintBtn.addEventListener('click', openFallback);
-          document.getElementById('fallbackOverlay').addEventListener('click', closeFallback);
+          fallbackOverlay.addEventListener('click', closeFallback);
 
           const closeBtn = modal.querySelector('.close-btn');
           if (closeBtn) closeBtn.addEventListener('click', closeFallback);
@@ -771,24 +326,39 @@
     })();
   </script>
 
-  <!-- Ticker (final): placed just BEFORE footer -->
+  <!-- Ticker (pre-calc + post-calc), placed just BEFORE footer -->
   <div class="ticker" aria-live="off" aria-label="Information ticker">
-    <div class="ticker__inner">
+    <!-- PRE-CALC: visible on load -->
+    <div class="ticker__inner" id="tickerPre">
+      <!-- Group 1 -->
+      <div class="ticker__group">
+        <span class="ticker__item" lang="en">Press Calculate to check your bill amount</span>
+        <span class="ticker__item" lang="hi">बिल राशि देखने के लिए 'Calculate' दबाएँ</span>
+      </div>
+      <!-- Group 2 (duplicate for seamless loop) -->
+      <div class="ticker__group" aria-hidden="true">
+        <span class="ticker__item" lang="en">Press Calculate to check your bill amount</span>
+        <span class="ticker__item" lang="hi">बिल राशि देखने के लिए 'Calculate' दबाएँ</span>
+      </div>
+    </div>
+
+    <!-- POST-CALC: hidden until after calculation -->
+    <div class="ticker__inner" id="tickerPost" hidden>
       <!-- Group 1 -->
       <div class="ticker__group">
         <span class="ticker__item" lang="en">
           For more information click
           <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="More information">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            <svg width="28" height="28" aria-hidden="true" focusable="false">
+              <use href="#icon-bulb"></use>
             </svg>
           </button>
         </span>
         <span class="ticker__item" lang="hi">
           अधिक जानकारी के लिए
           <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="अधिक जानकारी">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            <svg width="28" height="28" aria-hidden="true" focusable="false">
+              <use href="#icon-bulb"></use>
             </svg>
           </button>
           पर क्लिक करें
@@ -800,16 +370,16 @@
         <span class="ticker__item" lang="en">
           For more information click
           <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="More information">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            <svg width="28" height="28" aria-hidden="true" focusable="false">
+              <use href="#icon-bulb"></use>
             </svg>
           </button>
         </span>
         <span class="ticker__item" lang="hi">
           अधिक जानकारी के लिए
           <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="अधिक जानकारी">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            <svg width="28" height="28" aria-hidden="true" focusable="false">
+              <use href="#icon-bulb"></use>
             </svg>
           </button>
           पर क्लिक करें

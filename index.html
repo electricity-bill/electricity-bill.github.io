@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,12 +9,14 @@
   <title>Electricity Bill</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <!-- Global SVG sprite (define once, reuse everywhere) -->
+  <!-- SVG sprite (define once, reuse via <use>) -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;">
     <defs>
       <symbol id="icon-bulb" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+        <path fill="currentColor"
+          d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4" />
       </symbol>
     </defs>
   </svg>
@@ -29,7 +32,8 @@
         <div class="form_wrap">
           <div class="form_item">
             <label for="totalUnits">Total Electricity Units (kWh)</label>
-            <input type="number" id="totalUnits" name="totalUnits" inputmode="decimal" min="0.01" step="0.01" required />
+            <input type="number" id="totalUnits" name="totalUnits" inputmode="decimal" min="0.01" step="0.01"
+              required />
           </div>
         </div>
 
@@ -66,10 +70,13 @@
     const totalUnitsParam = url.searchParams.get('units');
     const totalBillParam = url.searchParams.get('bill');
     const buildUnitsParam = url.searchParams.get('consumption');
+    const monthParam = url.searchParams.get('month');
+
     const mainHeading = document.getElementById("mainHeading");
 
     if (tenantNameParam !== null) {
-      mainHeading.innerHTML = `Welcome ${String(tenantNameParam).charAt(0).toUpperCase() + String(tenantNameParam).slice(1)} Ji!`;
+      mainHeading.innerHTML =
+        `Welcome ${String(tenantNameParam).charAt(0).toUpperCase() + String(tenantNameParam).slice(1)} Ji!`;
     } else {
       mainHeading.innerHTML = `Welcome Tenant!`;
     }
@@ -77,12 +84,12 @@
     (function () {
       const form = document.getElementById('userForm');
       const totalUnitsEl = document.getElementById('totalUnits');
-      const totalBillEl  = document.getElementById('totalBill');
+      const totalBillEl = document.getElementById('totalBill');
       const buildUnitsEl = document.getElementById('buildUnits');
 
       // Prefill values only if params are present
       if (totalUnitsParam !== null && totalUnitsEl) totalUnitsEl.value = totalUnitsParam;
-      if (totalBillParam  !== null && totalBillEl)  totalBillEl.value  = totalBillParam;
+      if (totalBillParam !== null && totalBillEl) totalBillEl.value = totalBillParam;
       if (buildUnitsParam !== null && buildUnitsEl) buildUnitsEl.value = buildUnitsParam;
 
       const app = document.getElementById('app');
@@ -113,7 +120,7 @@
         }
 
         const totalUnits = parseNum(totalUnitsEl.value);
-        const totalBill  = parseNum(totalBillEl.value);
+        const totalBill = parseNum(totalBillEl.value);
         const buildUnits = parseNum(buildUnitsEl.value);
 
         const averageUnits = totalBill / totalUnits;
@@ -130,7 +137,7 @@
           <section class="summary-card panel" aria-labelledby="sum-title">
             <div class="summary-header">
               <div class="summary-title">
-                <h3 id="sum-title">Summary</h3>
+                <h3 id="sum-title">Summary${monthParam ? ` <span class="month-pill">${String(monthParam).charAt(0).toUpperCase() + String(monthParam).slice(1)}</span>` : ''}</h3>
                 <button
                   type="button"
                   class="icon-btn hint"
@@ -222,12 +229,6 @@
           </div>
         `;
 
-        // Swap ticker from pre-calc to post-calc after successful calculation
-        const pre = document.getElementById('tickerPre');
-        const post = document.getElementById('tickerPost');
-        if (pre) pre.hidden = true;
-        if (post) post.hidden = false;
-
         const copyBtn = document.getElementById('copySummary');
         const printBtn = document.getElementById('printSummary');
         const live = document.getElementById('sum-live');
@@ -263,17 +264,23 @@
           if (showHindi) {
             btn.textContent = 'English';
             btn.setAttribute('aria-label', 'Switch to English');
-            try { localStorage.setItem('calcLang', 'hi'); } catch {}
+            try {
+              localStorage.setItem('calcLang', 'hi');
+            } catch {}
           } else {
             btn.textContent = 'हिन्दी';
             btn.setAttribute('aria-label', 'Switch to Hindi');
-            try { localStorage.setItem('calcLang', 'en'); } catch {}
+            try {
+              localStorage.setItem('calcLang', 'en');
+            } catch {}
           }
         }
         try {
           const saved = localStorage.getItem('calcLang');
           applyLang(saved === 'hi');
-        } catch { applyLang(false); }
+        } catch {
+          applyLang(false);
+        }
 
         btn.addEventListener('click', () => {
           const showingHindi = !hi.hidden;
@@ -320,8 +327,16 @@
           if (closeBtn) closeBtn.addEventListener('click', closeFallback);
           window.addEventListener('keydown', (ev) => {
             if (ev.key === 'Escape') closeFallback();
-          }, { passive: true });
+          }, {
+            passive: true
+          });
         }
+
+        // After successful calculation, switch ticker to post-calc
+        const pre = document.getElementById('tickerPre');
+        const post = document.getElementById('tickerPost');
+        if (pre) pre.hidden = true;
+        if (post) post.hidden = false;
       });
     })();
   </script>
@@ -330,12 +345,10 @@
   <div class="ticker" aria-live="off" aria-label="Information ticker">
     <!-- PRE-CALC: visible on load -->
     <div class="ticker__inner" id="tickerPre">
-      <!-- Group 1 -->
       <div class="ticker__group">
         <span class="ticker__item" lang="en">Press Calculate to check your bill amount</span>
         <span class="ticker__item" lang="hi">बिल राशि देखने के लिए 'Calculate' दबाएँ</span>
       </div>
-      <!-- Group 2 (duplicate for seamless loop) -->
       <div class="ticker__group" aria-hidden="true">
         <span class="ticker__item" lang="en">Press Calculate to check your bill amount</span>
         <span class="ticker__item" lang="hi">बिल राशि देखने के लिए 'Calculate' दबाएँ</span>
@@ -344,7 +357,6 @@
 
     <!-- POST-CALC: hidden until after calculation -->
     <div class="ticker__inner" id="tickerPost" hidden>
-      <!-- Group 1 -->
       <div class="ticker__group">
         <span class="ticker__item" lang="en">
           For more information click
@@ -364,8 +376,6 @@
           पर क्लिक करें
         </span>
       </div>
-
-      <!-- Group 2 (duplicate for seamless loop) -->
       <div class="ticker__group" aria-hidden="true">
         <span class="ticker__item" lang="en">
           For more information click
@@ -395,20 +405,33 @@
         const pop = document.getElementById('calc-pop');
         const supportsPopover = 'showPopover' in HTMLElement.prototype;
         if (pop && supportsPopover) {
-          try { pop.showPopover(); return; } catch {}
+          try {
+            pop.showPopover();
+            return;
+          } catch {}
         }
-        // If popover hasn't been created yet (no calculation), scroll to summary or form
         const sum = document.getElementById('sum-title');
-        if (sum) { sum.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+        if (sum) {
+          sum.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+          return;
+        }
         const form = document.getElementById('userForm');
-        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (form) form.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
       };
 
       document.addEventListener('click', (e) => {
         const btn = e.target.closest('.ticker-hint-btn');
         if (!btn) return;
         onTickerClick();
-      }, { passive: true });
+      }, {
+        passive: true
+      });
     })();
   </script>
 
@@ -416,4 +439,5 @@
     <p>© 2025 Dheeraj Pant. All rights reserved.</p>
   </footer>
 </body>
+
 </html>

@@ -35,6 +35,10 @@
       --focus-ring: 3px solid rgba(37, 99, 235, 0.4);
 
       --bg-overlay: 0.25;
+
+      /* Ticker variables */
+      --ticker-speed: 20s;   /* slow eye-catching speed */
+      --ticker-gap: 28px;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -80,10 +84,9 @@
       pointer-events: none;
       z-index: -1;
     }
-    
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-    }
+
+    /* Removed the global “turn off all animations” block so the ticker is never unintentionally disabled */
+
     .var{
       border-radius: 2px;
       padding: 1.2px;
@@ -233,7 +236,7 @@
     .action-btn:active { transform: translateY(1px); }
     .action-btn:focus-visible { outline: var(--focus-ring); }
 
-    /* New: icon-only, borderless hint button with glow on open */
+    /* Icon-only, borderless hint button with glow on open */
     .icon-btn.hint {
       appearance: none;
       min-width: 40px;
@@ -252,30 +255,29 @@
     .icon-btn.hint:hover { opacity: 1; }
     .icon-btn.hint:active { transform: translateY(1px); }
     .icon-btn.hint:focus-visible { outline: var(--focus-ring); border-radius: 10px; }
-    /* Glow state toggled via JS when popover is open */
     .icon-btn.hint.is-active {
-      color: #f59e0b; /* amber-500 */
+      color: #f59e0b;
       text-shadow:
         0 0 6px rgba(245, 158, 11, 0.75),
         0 0 14px rgba(245, 158, 11, 0.55);
     }
-    /* Engraved, subtle hint style */
     .hint-engraved {
-        font-size: 0.84rem;
-        letter-spacing: 0.1px;
-        margin-top: 5px;
-        text-shadow:
-            0.5px 0.5px 0 rgba(255,255,255,0.55),  /* light edge */
-            -0.5px -0.5px 0 rgba(0,0,0,0.10);       /* inner dark edge */
-        opacity: 0.75;
+      font-size: 0.84rem;
+      letter-spacing: 0.1px;
+      margin-top: 5px;
+      text-shadow:
+        0.5px 0.5px 0 rgba(255,255,255,0.55),
+        -0.5px -0.5px 0 rgba(0,0,0,0.10);
+      opacity: 0.75;
     }
     @media (prefers-color-scheme: dark) {
-        .hint-engraved {
-            text-shadow:
-            0.5px 0.5px 0 rgba(0,0,0,0.45),
-            -0.5px -0.5px 0 rgba(255,255,255,0.10);
+      .hint-engraved {
+        text-shadow:
+          0.5px 0.5px 0 rgba(0,0,0,0.45),
+          -0.5px -0.5px 0 rgba(255,255,255,0.10);
+      }
     }
-}
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -303,6 +305,7 @@
     .stats-grid .result-stats-grid{
       border: 1.5px solid #16a34a;
     }
+
     /* Centered modal-like popover with translucent sheet */
     [popover].popover-card {
       position: fixed;
@@ -350,7 +353,8 @@
     .close-btn { min-width: 40px; min-height: 40px; padding: 8px; }
 
     @media (prefers-reduced-motion: reduce) {
-      [popover].popover-card { transition: none; }
+      /* Scope reductions; do not kill the ticker */
+      [popover].popover-card { transition: none !important; }
     }
 
     .visually-hidden {
@@ -367,6 +371,7 @@
       form, .btn, .summary-actions { display: none !important; }
       .wrapper { max-width: 720px; }
       .form_container { box-shadow: none; background: #fff; }
+      .ticker { display: none !important; }
     }
 
     .fallback-overlay {
@@ -393,32 +398,75 @@
       display: none;
     }
     .fallback-modal.is-open { display: block; }
+
     .site-footer {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 12px 16px;
-    margin-top: 16px;
-  }
-  .site-footer p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: rgba(17,24,39,0.8);
-    background: color-mix(in oklab, var(--bg, #fff) 92%, transparent);
-    border: 1px solid var(--border, #e5e7eb);
-    border-radius: 10px;
-    padding: 6px 10px;
-    backdrop-filter: blur(4px);
-  }
-  @media (prefers-color-scheme: dark) {
-    .site-footer p {
-      color: rgba(229,231,235,0.85);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 12px 16px;
+      margin-top: 16px;
     }
-  }
+    .site-footer p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(17,24,39,0.8);
+      background: color-mix(in oklab, var(--bg, #fff) 92%, transparent);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 10px;
+      padding: 6px 10px;
+      backdrop-filter: blur(4px);
+    }
+    @media (prefers-color-scheme: dark) {
+      .site-footer p {
+        color: rgba(229,231,235,0.85);
+      }
+    }
+
+    /* ===== Ticker CSS (final) ===== */
+    .ticker {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin-top: 8px;
+      padding: 6px 0;
+      background: color-mix(in oklab, var(--bg, #fff) 92%, transparent);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      /* Optional fade edges for aesthetics */
+      mask-image: linear-gradient(to right, transparent 0, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, black 8%, black 92%, transparent 100%);
+    }
+    .ticker__inner {
+      display: flex;
+      width: max-content; /* allow content to size naturally */
+      will-change: transform;
+      animation: ticker-marquee var(--ticker-speed) linear infinite; /* always running */
+    }
+    .ticker__group {
+      display: flex;
+      align-items: center;
+      gap: var(--ticker-gap);
+      flex: 0 0 auto; /* do not shrink */
+      padding-inline: 12px;
+      white-space: nowrap;
+    }
+    .ticker__item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--fg);
+    }
+    .ticker__item button.icon-btn.hint { min-width: 28px; min-height: 28px; padding: 4px; }
+
+    @keyframes ticker-marquee {
+      from { transform: translate3d(0, 0, 0); }
+      to   { transform: translate3d(-50%, 0, 0); } /* second group slides into view */
+    }
+    /* ================================= */
   </style>
 </head>
 <body>
-  <h1 class = "mainHeading" id="mainHeading"></h1>
+  <h1 class="mainHeading" id="mainHeading"></h1>
   <div class="wrapper">
     <div class="form_container">
       <form name="form" id="userForm" novalidate>
@@ -526,7 +574,7 @@
           `Your respective share: ${yourShare.toFixed(2)}`,
           `Consumption: ${buildUnits.toFixed(2)} kWh`,
           `Payable amount: ₹${result.toFixed(2)}`
-        ].join('\\n');
+        ].join('\n');
 
         app.innerHTML = `
           <section class="summary-card panel" aria-labelledby="sum-title">
@@ -596,43 +644,6 @@
             </div>
             <div class="popover-inner">
               <p class="hint hint-engraved">Press the button above to switch between English and Hindi.</p>
-              <!-- <div class="content">
-                <div id="exp-en" lang="en">
-                  <p>
-                    1. First, find the average cost per unit:
-                    The total bill of <span class="var">₹${totalBill.toFixed(2)}</span> is for
-                    <span class="var">${totalUnits.toFixed(2)}</span> kWh of total consumption.
-                    So, the average cost per unit is:
-                    <span class="var">₹${totalBill.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ₹${averageUnits.toFixed(2)} per kWh</span>.
-                  </p>
-                  <p>
-                    2. Now, calculate the specific share:
-                    Consumption is <span class="var">${buildUnits.toFixed(2)}</span> kWh.
-                    Therefore, the payable amount is:
-                    <span class="var">${buildUnits.toFixed(2)}</span> kWh ×
-                    <span class="var">₹${averageUnits.toFixed(2)}/kWh</span> =
-                    <span class="var">₹${result.toFixed(2)}</span>.
-                  </p>
-                </div>
-
-                <div id="exp-hi" lang="hi" hidden>
-                  <p>
-                    1. सबसे पहले, हम प्रति यूनिट औसत लागत निकालते हैं:
-                    कुल बिल <span class="var">₹${totalBill.toFixed(2)}</span>,
-                    कुल खपत <span class="var">${totalUnits.toFixed(2)}</span> kWh के लिए है।
-                    इसलिए, प्रति यूनिट औसत लागत है:
-                    <span class="var">₹${totalBill.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ₹${averageUnits.toFixed(2)} प्रति kWh</span>.
-                  </p>
-                  <p>
-                    2. अब, हम आपके विशेष हिस्से का हिसाब लगाते हैं।
-                    आपकी खपत <span class="var">${buildUnits.toFixed(2)}</span> kWh थी।
-                    अतः, आपकी देय राशि है:
-                    <span class="var">${buildUnits.toFixed(2)}</span> kWh ×
-                    <span class="var">₹${averageUnits.toFixed(2)}/kWh</span> =
-                    <span class="var">₹${result.toFixed(2)}</span>.
-                  </p>
-                </div>
-              </div> -->
               <div class="content">
                 <div id="exp-en" lang="en">
                   <p>
@@ -649,7 +660,7 @@
                 <div id="exp-hi" lang="hi" hidden>
                   <p>
                     1. कुल यूनिट में से अपने हिस्से की गणना करें:<br>
-                    आपने <span class="var">${totalUnits.toFixed(2)}</span> में से <span class="var">${buildUnits.toFixed(2)}</span> कि खपत की ।<br>
+                    आपने <span class="var">${totalUnits.toFixed(2)}</span> में से <span class="var">${buildUnits.toFixed(2)}</span> की खपत की।<br>
                     आपका हिस्सा (अनुपात): <span class="var">${buildUnits.toFixed(2)} ÷ ${totalUnits.toFixed(2)} = ${yourShare.toFixed(5)}</span>
                   </p>
                   <p>
@@ -735,20 +746,20 @@
 
           const openFallback = () => {
             modal.classList.add('is-open');
-            fallbackOverlay.classList.add('is-open');
+            document.getElementById('fallbackOverlay').classList.add('is-open');
             hintBtn.classList.add('is-active');
             hintBtn.setAttribute('aria-expanded', 'true');
           };
           const closeFallback = () => {
             modal.classList.remove('is-open');
-            fallbackOverlay.classList.remove('is-open');
+            document.getElementById('fallbackOverlay').classList.remove('is-open');
             hintBtn.classList.remove('is-active');
             hintBtn.setAttribute('aria-expanded', 'false');
           };
 
           hintBtn.removeAttribute('popovertarget');
           hintBtn.addEventListener('click', openFallback);
-          fallbackOverlay.addEventListener('click', closeFallback);
+          document.getElementById('fallbackOverlay').addEventListener('click', closeFallback);
 
           const closeBtn = modal.querySelector('.close-btn');
           if (closeBtn) closeBtn.addEventListener('click', closeFallback);
@@ -759,9 +770,80 @@
       });
     })();
   </script>
+
+  <!-- Ticker (final): placed just BEFORE footer -->
+  <div class="ticker" aria-live="off" aria-label="Information ticker">
+    <div class="ticker__inner">
+      <!-- Group 1 -->
+      <div class="ticker__group">
+        <span class="ticker__item" lang="en">
+          For more information click
+          <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="More information">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            </svg>
+          </button>
+        </span>
+        <span class="ticker__item" lang="hi">
+          अधिक जानकारी के लिए
+          <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="अधिक जानकारी">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            </svg>
+          </button>
+          पर क्लिक करें
+        </span>
+      </div>
+
+      <!-- Group 2 (duplicate for seamless loop) -->
+      <div class="ticker__group" aria-hidden="true">
+        <span class="ticker__item" lang="en">
+          For more information click
+          <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="More information">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            </svg>
+          </button>
+        </span>
+        <span class="ticker__item" lang="hi">
+          अधिक जानकारी के लिए
+          <button type="button" class="icon-btn hint ticker-hint-btn" aria-label="अधिक जानकारी">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M9 21h6v-1H9zm3-19a7 7 0 0 0-4.9 11.9c.6.6 1.1 1.4 1.3 2.3l.1.3h7l.1-.3c.2-.9.7-1.7 1.3-2.3A7 7 0 0 0 12 2m0 2a5 5 0 0 1 3.5 8.5c-.9.9-1.5 2-1.8 3.2h-3.4c-.3-1.2-.9-2.3-1.8-3.2A5 5 0 0 1 12 4"/>
+            </svg>
+          </button>
+          पर क्लिक करें
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticker JS: open popover if present, otherwise scroll to form/summary -->
+  <script>
+    (function () {
+      const onTickerClick = () => {
+        const pop = document.getElementById('calc-pop');
+        const supportsPopover = 'showPopover' in HTMLElement.prototype;
+        if (pop && supportsPopover) {
+          try { pop.showPopover(); return; } catch {}
+        }
+        // If popover hasn't been created yet (no calculation), scroll to summary or form
+        const sum = document.getElementById('sum-title');
+        if (sum) { sum.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+        const form = document.getElementById('userForm');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ticker-hint-btn');
+        if (!btn) return;
+        onTickerClick();
+      }, { passive: true });
+    })();
+  </script>
+
   <footer class="site-footer" role="contentinfo">
-  <p>© Gauri Kunj - Dheeraj Pant, 2025</p>
-</footer>
+    <p>© 2025 Dheeraj Pant. All rights reserved.</p>
+  </footer>
 </body>
 </html>
-

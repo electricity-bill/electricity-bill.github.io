@@ -614,6 +614,11 @@ input[type="number"]:focus-visible,
   padding: 4px;
 }
 
+a:link, a:visited, a:hover, a:active {
+  color: inherit; /* Inherits the text color of the parent element */
+  text-decoration: none; /* Removes the underline */
+}
+
 @keyframes ticker-marquee {
   from {
     transform: translate3d(0, 0, 0);
